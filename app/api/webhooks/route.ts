@@ -1,14 +1,15 @@
-import Stripe from 'stripe';
 import { stripe } from '@/utils/stripe';
 import {
   upsertProductRecord,
   upsertPriceRecord,
   manageSubscriptionStatusChange
 } from '@/utils/supabase-admin';
+import Stripe from 'stripe';
 
 const relevantEvents = new Set([
   'product.created',
   'product.updated',
+  'product.deleted',
   'price.created',
   'price.updated',
   'checkout.session.completed',
@@ -36,6 +37,7 @@ export async function POST(req: Request) {
       switch (event.type) {
         case 'product.created':
         case 'product.updated':
+        case 'product.deleted':
           await upsertProductRecord(event.data.object as Stripe.Product);
           break;
         case 'price.created':
